@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>LILITH</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" href="/asset/favicon-64.png?v=2" />
+    <link rel="apple-touch-icon" href="asset/icon-180.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="stripes"></div>
+    <div class="wm">財務解析</div>
+    <div id="boot">
+      <p>LOADING PAGE<span class="blink">■</span></p>
+      <div class="ld"><i></i></div>
+    </div>
+
+    <main id="login" hidden>
+      <img class="lg" src="asset/icon-512.png" alt="" />
+      <h1 class="ttl">MAGI</h1>
+      <p class="sub">認証要求 / AUTHENTICATION REQUIRED</p>
+      <section class="pn">
+        <h2>ACCESS</h2>
+        <input id="em" type="email" autocomplete="username" placeholder="ID" aria-label="ID" />
+        <input
+          id="pw"
+          type="password"
+          autocomplete="current-password"
+          placeholder="PASSCODE"
+          aria-label="Passcode"
+        />
+        <button id="go">MASUK</button>
+        <p id="err" class="err" role="alert"></p>
+      </section>
+    </main>
+
+    <div id="app" hidden>
+      <nav>
+        <img class="nl" src="asset/icon-192.png" alt="" /><span class="brand ttl">MAGI</span
+        ><span id="net" class="net" hidden>OFFLINE</span><span id="jam" class="jam">--:--:--</span
+        ><button id="mb" class="ghost">☰ MENU</button>
+      </nav>
+      <div id="menu" hidden>
+        <button data-v="home">/home</button><button data-v="dash">/keuangan</button
+        ><button data-v="rekap">/rekap</button><button data-v="log">/log-transaksi</button
+        ><button data-v="magi">/magi</button><button data-v="bill">/tagihan</button
+        ><button data-v="sholat">/sholat</button><button data-v="pelacak">/pelacak</button
+        ><button data-v="alarm">/alarm</button><button data-go="peta.html">/peta</button
+        ><button id="sb">/setting</button><button id="lo">/keluar</button>
+      </div>
+
+      <main>
+        <section id="v-home" class="vw">
+          <p class="sub">MAIN MENU / メインメニュー</p>
+          <div class="hub">
+            <button class="hb" data-v="dash"><b>財</b>KEUANGAN</button
+            ><button class="hb" data-v="rekap"><b>計</b>REKAP</button
+            ><button class="hb" data-v="log"><b>記</b>LOG</button
+            ><button class="hb" data-v="magi"><b>賢</b>MAGI</button
+            ><button class="hb" data-v="bill"><b>払</b>TAGIHAN</button
+            ><button class="hb" data-v="sholat"><b>祈</b>SHOLAT</button
+            ><button class="hb" data-v="pelacak"><b>録</b>PELACAK</button
+            ><button class="hb" data-v="alarm"><b>時</b>ALARM</button
+            ><button class="hb" data-go="peta.html"><b>地</b>PETA</button
+            ><button class="hb" id="hs"><b>設</b>SETTING</button>
+          </div>
+        </section>
+        <section id="v-dash" class="vw" hidden>
+          <p class="sub">FINANCE ANALYSIS / 財務解析</p>
+          <section class="pn">
+            <h2>PERIODE</h2>
+            <input id="mon" type="month" aria-label="Bulan" />
+          </section>
+          <section class="pn">
+            <h2>PERBANDINGAN</h2>
+            <div class="row mid">
+              <div id="hex" class="hex idle">NO DATA</div>
+              <div class="st">
+                <div class="c"><small>PENDAPATAN</small><b id="inc" class="in">Rp 0</b></div>
+                <div class="c"><small>PENGELUARAN</small><b id="exp" class="out">Rp 0</b></div>
+                <div class="c">
+                  <small>SISA (PENDAPATAN − PENGELUARAN)</small><b id="bal">Rp 0</b>
+                </div>
+              </div>
+            </div>
+            <div class="bar"><i id="fill"></i></div>
+            <p id="pct" class="sub">0% PENDAPATAN TERPAKAI</p>
+          </section>
+          <section class="pn">
+            <h2>CATAT TRANSAKSI</h2>
+            <div class="row">
+              <select id="typ" aria-label="Jenis">
+                <option value="in">Pendapatan</option>
+                <option value="out" selected>Pengeluaran</option>
+              </select>
+              <select id="cat" aria-label="Kategori"></select>
+            </div>
+            <input id="lbl" maxlength="60" placeholder="Keterangan" aria-label="Keterangan" />
+            <input id="amt" inputmode="numeric" placeholder="Nominal (Rp)" aria-label="Nominal" />
+            <input
+              id="tgl"
+              type="number"
+              min="1"
+              max="31"
+              inputmode="numeric"
+              placeholder="Tanggal 1-31 (kosong = hari ini)"
+              aria-label="Tanggal"
+            /><button id="add">SIMPAN</button>
+          </section>
+          <section class="pn">
+            <h2>HEX GRID · PENGELUARAN</h2>
+            <div id="hexg"></div>
+          </section>
+        </section>
+
+        <section id="v-rekap" class="vw" hidden>
+          <p class="sub">REKAPITULASI / 集計</p>
+          <section class="pn">
+            <h2>REKAP INFORMATION</h2>
+            <div class="inf">
+              <div class="blk"><b>LI</b><span id="rmon">--</span></div>
+              <div id="rkv"></div>
+            </div>
+            <p class="sub ctr">LILITH PROGRAM · PRIVATE FINANCE</p>
+          </section>
+          <section class="pn">
+            <h2>KATEGORI CHANNEL</h2>
+            <div id="chn" class="chn"></div>
+            <div class="sb"><span>⚠ REKAP BULAN INI</span></div>
+            <div id="rst" class="sb"><span>STATUS</span></div>
+          </section>
+          <section class="pn">
+            <h2>ARUS KAS WAVEFORM</h2>
+            <div class="cw">
+              <div class="lbl tl">
+                <b>ARUS KAS</b><small>CHANNEL : SALDO<br />SENSOR : LILITH-FIN</small>
+              </div>
+              <div class="lbl tr"><small>STATION:</small><b>LILITH</b></div>
+              <svg id="cv" viewBox="0 0 400 320" role="img" aria-label="Grafik arus kas"></svg>
+            </div>
+            <p id="rdo" class="sub">--</p>
+            <p class="sub">
+              HIJAU = PENDAPATAN · MERAH = PENGELUARAN · ORANYE = SALDO (KUMULATIF) · SENTUH &amp;
+              GESER UNTUK MEMBACA
+            </p>
+          </section>
+          <section class="pn">
+            <h2>LOG</h2>
+            <div id="rlg" class="rlg"></div>
+          </section>
+        </section>
+        <section id="v-log" class="vw" hidden>
+          <p class="sub">RIB CAGE LOG / 取引記録</p>
+          <section class="pn">
+            <h2>RIWAYAT BULAN INI</h2>
+            <ul id="list" class="rib"></ul>
+          </section>
+        </section>
+
+        <section id="v-magi" class="vw" hidden>
+          <div id="mhex" class="mhex" aria-hidden="true"></div>
+          <div class="mdsp">
+            <svg
+              id="msvg"
+              viewBox="0 0 1000 605"
+              role="img"
+              aria-label="Sistem MAGI: tiga node memberi suara atas data keuangan"
+            ></svg>
+          </div>
+          <p class="sub ctr mcr">
+            MAGI: SENTUH NODE UNTUK RINCIAN · SUARA TERBANYAK MENANG · TAMPILAN DIADAPTASI DARI
+            GITHUB.COM/BAGUSINDRAYANA/EWS-CONCEPT-NEW &amp; TOMASZREWAK/MAGI
+          </p>
+          <div id="mgm" class="mdl" hidden>
+            <div class="mh">
+              <div id="mgn" class="mt"></div>
+              <div id="mgx" class="mcl">X</div>
+            </div>
+            <div id="mgb" class="mbd"></div>
+          </div>
+          <div id="mgl" class="mgl" hidden>
+            <span class="loader"></span>
+            <p>THIS IS A CONCEPT DESIGN - DATA KEUANGAN PRIBADI</p>
+          </div>
+        </section>
+        <section id="v-bill" class="vw" hidden>
+          <p class="sub">PAYMENT SCHEDULE / 支払予定</p>
+          <section class="pn">
+            <h2>TAMBAH TAGIHAN BULANAN</h2>
+            <input
+              id="bn"
+              maxlength="40"
+              placeholder="Nama (mis. Listrik)"
+              aria-label="Nama tagihan"
+            />
+            <div class="row">
+              <input
+                id="ba"
+                inputmode="numeric"
+                placeholder="Nominal (Rp)"
+                aria-label="Nominal"
+              /><input
+                id="bd"
+                type="number"
+                min="1"
+                max="31"
+                placeholder="Tanggal (1-31)"
+                aria-label="Tanggal jatuh tempo"
+              />
+            </div>
+            <button id="badd">SIMPAN TAGIHAN</button>
+          </section>
+          <section class="pn">
+            <h2>JADWAL TAGIHAN</h2>
+            <ul id="bl" class="bl"></ul>
+            <button id="ics" class="ghost">EKSPOR KE KALENDER (.ICS)</button>
+          </section>
+        </section>
+        <section id="v-sholat" class="vw" hidden>
+          <p class="sub">PRAYER TIMES / 祈祷時刻 · WIB</p>
+          <section class="pn">
+            <h2>BERIKUTNYA</h2>
+            <div id="nx" class="cons">--</div>
+            <p id="lc" class="sub"></p>
+          </section>
+          <section class="pn">
+            <h2>JADWAL HARI INI</h2>
+            <ul id="pl" class="bl pr"></ul>
+            <button id="gl" class="ghost">PAKAI LOKASI SAYA</button
+            ><button id="wk" class="ghost">MODE SIAGA: OFF</button>
+            <p class="sub">
+              Perkiraan metode Kemenag RI; bandingkan dengan jadwal resmi. Pengingat berbunyi saat
+              aplikasi terbuka.
+            </p>
+          </section>
+        </section>
+        <section id="v-pelacak" class="vw wide" hidden>
+          <p class="sub">PRAYER TRACKER / 礼拝記録</p>
+          <div class="bn2"><span>PRAYER STATUS</span></div>
+          <input id="pmon" type="month" aria-label="Bulan" />
+          <p id="psum" class="sub ctr">--</p>
+          <div id="pgrid" class="rb"></div>
+          <p class="sub ctr">
+            SENTUH UNTUK MENANDAI · HIJAU = SELESAI · MERAH = BELUM / TERLEWAT · REDUP = BELUM
+            WAKTUNYA
+          </p>
+        </section>
+        <section id="v-alarm" class="vw" hidden>
+          <p class="sub">ALARM / 目覚まし</p>
+          <section class="pn">
+            <h2>TAMBAH ALARM</h2>
+            <input id="ahm" type="time" aria-label="Jam" /><input
+              id="alb"
+              maxlength="30"
+              placeholder="Label (opsional)"
+              aria-label="Label"
+            /><button id="aad">SIMPAN ALARM</button>
+          </section>
+          <section class="pn">
+            <h2>DAFTAR ALARM</h2>
+            <ul id="alst" class="bl"></ul>
+          </section>
+        </section>
+        <p class="sub foot">LILITH · PRIVATE · TERSINKRON · PRIVATE</p>
+      </main>
+    </div>
+
+    <div id="modal" hidden>
+      <div class="pn">
+        <h2>SYSTEM SETTING</h2>
+        <button id="snd" class="ghost">SIRENE: OFF</button
+        ><button id="ntf" class="ghost">NOTIFIKASI: OFF</button
+        ><button id="tst" class="ghost">UJI SIRENE</button
+        ><button id="exp" class="ghost">EKSPOR DATA (.JSON)</button
+        ><button id="imp" class="ghost">IMPOR DATA (.JSON)</button
+        ><input id="impf" type="file" accept="application/json" hidden /><button id="mc">
+          TUTUP
+        </button>
+      </div>
+    </div>
+    <div id="alert" hidden>
+      <div class="mq top">
+        <div class="win"><div id="mqt" class="trk"></div></div>
+      </div>
+      <div class="mq bot">
+        <div class="win"><div id="mqb" class="trk"></div></div>
+      </div>
+      <div class="al">
+        <div class="bn"><b id="at">WARNING</b><small id="as"></small></div>
+        <div class="r2">
+          <div class="hxr"><b id="s1v"></b><small id="s1l"></small></div>
+          <div class="hxr"><b id="s2v"></b><small id="s2l"></small></div>
+        </div>
+        <div id="amsg" class="am"></div>
+        <div class="r2">
+          <div class="hxr sd"><small>WARNING</small><i>▲</i><i>▼</i></div>
+          <div class="tag"><u id="atag">ALERT</u></div>
+          <div class="hxr sd"><small>WARNING</small><i>▲</i><i>▼</i></div>
+        </div>
+        <button id="stop">MATIKAN</button>
+      </div>
+    </div>
+    <div class="stripes bot"></div>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "appId": "com.example.lilith",
+  "appName": "LILITH",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

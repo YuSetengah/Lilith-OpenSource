@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  // WAJIB: ganti dengan UID akun Anda (Console > Authentication > Users). Akun lain ditolak total.
+  function me() { return 'REPLACE_WITH_YOUR_UID'; }
+  function owner(uid) { return request.auth != null && request.auth.uid == uid && request.auth.uid == me(); }
+  function validCfg() {
+    let d = request.resource.data;
+    return d.keys().hasOnly(['al','pr','loc','t'])
+      && (!('al' in d) || (d.al is list && d.al.size() <= 50))
+      && (!('pr' in d) || d.pr is map)
+      && (!('loc' in d) || (d.loc is map && d.loc.lat is number && d.loc.lon is number
+          && d.loc.lat >= -90 && d.loc.lat <= 90 && d.loc.lon >= -180 && d.loc.lon <= 180))
+      && d.t is number;
+  }
+  function valid() {
+    let d = request.resource.data;
+    return d.keys().hasOnly(['type','label','cat','amount','month','t','day'])
+      && d.type in ['in','out']
+      && d.label is string && d.label.size() > 0 && d.label.size() <= 60
+      && d.cat is string && d.cat.size() <= 20
+      && d.amount is number && d.amount > 0 && d.amount < 1000000000000
+      && d.month is string && d.month.matches('^[0-9]{4}-(0[1-9]|1[0-2])$')
+      && d.t is number
+      && (!('day' in d) || (d.day is int && d.day >= 1 && d.day <= 31));
+  }
+  function validBill() {
+    let d = request.resource.data;
+    return d.keys().hasOnly(['name','amount','day','paid','t'])
+      && d.name is string && d.name.size() > 0 && d.name.size() <= 40
+      && d.amount is number && d.amount > 0 && d.amount < 1000000000000
+      && d.day is int && d.day >= 1 && d.day <= 31 && d.paid == '' && d.t is number;
+  }
+  function validSholat(day) {
+    let d = request.resource.data;
+    return day.matches('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$')
+      && d.keys().hasOnly(['Subuh','Dzuhur','Ashar','Maghrib','Isya','m','t'])
+      && d.m == day[0:7] && d.t is number
+      && (!('Subuh' in d) || d.Subuh is bool) && (!('Dzuhur' in d) || d.Dzuhur is bool)
+      && (!('Ashar' in d) || d.Ashar is bool) && (!('Maghrib' in d) || d.Maghrib is bool)
+      && (!('Isya' in d) || d.Isya is bool);
+  }
+  match /databases/{db}/documents {
+    match /users/{uid}/tx/{id} {
+      allow read, delete: if owner(uid);
+      allow create: if owner(uid) && valid();
+      allow update: if false;
+    }
+    match /users/{uid}/bills/{id} {
+      allow read, delete: if owner(uid);
+      allow create: if owner(uid) && validBill();
+      allow update: if owner(uid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['paid'])
+        && request.resource.data.paid.matches('^[0-9]{4}-(0[1-9]|1[0-2])$');
+    }
+    match /users/{uid}/cfg/main {
+      allow read, delete: if owner(uid);
+      allow create, update: if owner(uid) && validCfg();
+    }
+    match /users/{uid}/sholat/{day} {
+      allow read, delete: if owner(uid);
+      allow create, update: if owner(uid) && validSholat(day);
+    }
+    match /{path=**} { allow read, write: if false; }
+  }
+}
